@@ -1,6 +1,7 @@
 int potPin = A0;
 int buttonPin = 2;
 int ledPin = 3;
+int random;
 
 void setup() {
   pinMode(buttonPin, INPUT_PULLUP);
