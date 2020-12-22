@@ -6,11 +6,16 @@ void setup() {
   pinMode(buttonPin, INPUT_PULLUP);
   pinMode(potPin, INPUT);
   pinMode(ledPin, OUTPUT);
+  Serial.begin(9600);
 }
 
 void loop() {
-  int potState = analogRead(potPin) / 4;
-  analogWrite(ledPin, potState);
+  int potState = analogRead(potPin); 
   int buttonState = digitalRead(buttonPin);
-  digitalWrite(ledPin, not buttonState);
+  Serial.print("Button: ");
+  Serial.print(buttonState);
+  Serial.println("");
+  Serial.print("Pot: ");
+  Serial.print(potState);
+  Serial.println("");
 }
