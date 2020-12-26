@@ -1,6 +1,6 @@
 {
     "board": "arduino:avr:uno",
-    "sketch": "Test.ino",
+    "sketch": "AmazonLights.ino",
     "port": "/dev/tty.usbmodem14101",
     "programmer": "AVR ISP"
 }
