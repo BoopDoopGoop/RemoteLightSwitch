@@ -1,23 +1,25 @@
 int buttonPin = 2;
 int ledPin = 3;
-int lastButtonState = 1;
+int ledState = 0;
+int previousButtonState = 0;
 
 void setup() {
-  pinMode(buttonPin, INPUT_PULLUP);
+  pinMode(buttonPin, INPUT);
+  pinMode(ledPin, OUTPUT);
+  Serial.begin(9600);
 }
 
-void loop() {  
-  int buttonState = digitalRead(buttonPin); // 1 when unpressed, 0 pressed
-
-  if(buttonState == 0 && lastButtonState == 1) {
-    digitalWrite(ledPin,not buttonState);
-    lastButtonState = 0;
+void loop() {
+  int buttonState = not digitalRead(buttonPin);
+  
+  if ((previousButtonState == 0) && (buttonState == 1)) {
+    if (ledState == 0) {
+      ledState = 1;
+    }
+    if (ledState == 1) {
+      ledState = 0;
+    }
   }
-  else if (buttonState == 1 && lastButtonState == 0) {
-    lastButtonState = 1;
-  }
-    
+  previousButtonState = buttonState;
+  digitalWrite(ledPin, ledState);
 }
-
-
- 
