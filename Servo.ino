@@ -11,7 +11,5 @@ void setup() {
 
 void loop() {
     myServo.write(servoPos);
-    
-
 
 }
