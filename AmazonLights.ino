@@ -1,10 +1,10 @@
-int LEDState = 0;
-int LEDpin = 3;
+/* int LEDState = 0;
+int LEDpin = 12;
 int buttonPin = 2;
-int buttonNew;
-int buttonOld = 1;
+int buttonState;
+int previousButtonState = 1;
 int time = 0;
-int debounce = 1000;
+int debounce = 80;
 
 void setup() {
   Serial.begin(9600);
@@ -13,9 +13,9 @@ void setup() {
 }
 
 void loop() {
-  buttonNew = digitalRead(buttonPin);
+  buttonState = digitalRead(buttonPin);
 
-  if (buttonOld == 0 && buttonNew == 1 && ((millis() - time) > debounce)) {
+  if (buttonState == 0 && previousButtonState == 1 && ((millis() - time) > debounce)) {
     if (LEDState == 0) {
       digitalWrite(LEDpin, HIGH);
       LEDState = 1;
@@ -27,5 +27,5 @@ void loop() {
     time = millis();
   }
   
-  buttonOld = buttonNew;
-}
+  previousButtonState = buttonState;
+} */
