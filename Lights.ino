@@ -38,7 +38,6 @@ void loop() {
   }
   
     previousButtonState = buttonState;
-
 }
 
 void turnOn() {

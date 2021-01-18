@@ -1,4 +1,4 @@
-int LEDState = 0;
+/* int LEDState = 0;
 int LEDpin = 12;
 int buttonPin = 2;
 int buttonState;
@@ -28,4 +28,4 @@ void loop() {
   }
   
   previousButtonState = buttonState;
-}
+} */
