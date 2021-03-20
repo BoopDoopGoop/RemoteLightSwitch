@@ -3,7 +3,7 @@
 //Servo
 int servoPin = 9;
 int onPos = 180;
-int offPos = 150;
+int offPos = 145;
 int pos;
 
 Servo myServo;
@@ -17,6 +17,8 @@ int toggle = 0; //0 = off, 1 = on
 //Debounce
 int debounce = 60;
 int lastDebounceTime = 0;
+
+int val;
 
 void setup() {
   myServo.attach(servoPin);

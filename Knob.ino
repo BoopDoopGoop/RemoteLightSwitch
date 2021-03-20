@@ -19,5 +19,12 @@ void loop() {
     val = map(val, 0, 1023, 0, 180);
     myServo.write(val);
     delay(15);
+    testServoPos();
+    
+}
 
+void testServoPos() {
+    Serial.print("Pos:");
+    Serial.print(val);
+    Serial.println("");
 }
