@@ -1,0 +1,2 @@
+#define SECRET_SSID "HJAY"
+#define SECRET_PASS "C87e12Np$"
