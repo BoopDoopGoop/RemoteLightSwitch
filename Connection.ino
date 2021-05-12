@@ -32,6 +32,7 @@ int status = WL_IDLE_STATUS;
 WiFiServer server(80);
 
 String controlString;
+String lightStatus;
 
 void setup() {
   Serial.begin(9600);
@@ -94,31 +95,38 @@ void loop() {
           client.println("HTTP/1.1 200 OK");
           client.println("Content-Type: text/html");
           client.println("Connection: close");  // the connection will be closed after completion of the response
-          client.println("Refresh: 10");  // refresh the page automatically every 5 sec
+          client.println("Refresh: 60");  // refresh the page automatically every 5 sec
           client.println();
           client.println("<!DOCTYPE HTML>");
           client.println("<html>");
           // output the value of each analog input pin
           client.println("<html>");
           client.println("<head>");
-          client.println("<title>The Geek Pub Arduino Ethernet Test Page</title>");
+          client.println("<title>Henry Arduino</title>");
           client.println("</head>");
           client.println("<body>");
-          /* client.println("<img src=\"https://cdn.thegeekpub.com/wp-content/uploads/2018/01/the-geek-pub-big-logo-new.jpg\") style=\"width: 55%; margin-left: auto; margin-right: auto; display: block;\" />"); */
+          
+          // Optional Image
+          /* client.println("<img src=\"https://scontent-lga3-1.xx.fbcdn.net/v/t1.6435-9/128884714_2951717581774395_6712155076512710494_n.jpg?_nc_cat=111&ccb=1-3&_nc_sid=09cbfe&_nc_ohc=P0rIy2lClVMAX885IlT&_nc_ht=scontent-lga3-1.xx&oh=09723c8e1e7e29e1f699b955915035fe&oe=60C111EF\") style=\"width: 55%; margin-left: auto; margin-right: auto; display: block;\" />"); */
+
           client.println("<h2 style=\"color: green; font-family: arial; text-align: center;\">LED ON/OFF FROM WEBPAGE</h2>");
           client.println("<hr>"); 
           client.println("<h2 style=\"color: blue; font-family: arial; text-align: center;\"><a href=\"/?GPLED2ON\"\">Turn On</a> - <a href=\"/?GPLED2OFF\"\">Turn Off</a></h2>");
+          client.print("Status: ");
+          client.print(lightStatus);
           client.println("</body>");
           client.println("</html>");
 
           // control arduino pin
           if ((controlString.indexOf("?GPLED2ON") > -1) && ((millis() - lastDebounceTime) > debounce)) {
             turnOn();
+            lightStatus = "On";
             lastDebounceTime = millis();
           }
           else {
             if ((controlString.indexOf("?GPLED2OFF") > -1) && ((millis() - lastDebounceTime) > debounce)){
               turnOff();
+              lightStatus = "Off";
               lastDebounceTime = millis();
             }
           }
@@ -164,7 +172,7 @@ void printWifiStatus() {
 }
 
 void turnOn() {
-  for (pos = 150; pos <= onPos; pos += 1) {
+  for (pos = 150; pos <= onPos; pos += 2) {
         myServo.write(pos);
         delay(25);
 
@@ -172,7 +180,7 @@ void turnOn() {
 }
 
 void turnOff() {
-  for (pos = 180; pos >= offPos; pos -= 1) {
+  for (pos = 180; pos >= offPos; pos -= 2) {
         myServo.write(pos);
         delay(25);
 
