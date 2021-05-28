@@ -3,6 +3,8 @@
 #include "arduino_secrets.h"
 #include <Servo.h>
 
+IPAddress ip(192, 168, 0, 177); 
+
 //Servo
 int servoPin = 9;
 int onPos = 180;
@@ -42,6 +44,8 @@ void setup() {
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
+
+  WiFi.config(ip);
 
   // check for the WiFi module:
   if (WiFi.status() == WL_NO_MODULE) {
@@ -102,12 +106,12 @@ void loop() {
           // output the value of each analog input pin
           client.println("<html>");
           client.println("<head>");
-          client.println("<title>Henry Arduino</title>");
+          client.println("<title>Hallway Lights</title>");
           client.println("</head>");
           client.println("<body>");
           
           // Optional Image
-          /* client.println("<img src=\"https://scontent-lga3-1.xx.fbcdn.net/v/t1.6435-9/128884714_2951717581774395_6712155076512710494_n.jpg?_nc_cat=111&ccb=1-3&_nc_sid=09cbfe&_nc_ohc=P0rIy2lClVMAX885IlT&_nc_ht=scontent-lga3-1.xx&oh=09723c8e1e7e29e1f699b955915035fe&oe=60C111EF\") style=\"width: 55%; margin-left: auto; margin-right: auto; display: block;\" />"); */
+          // client.println("<img src=\"https://scontent-lga3-1.xx.fbcdn.net/v/t1.6435-9/128884714_2951717581774395_6712155076512710494_n.jpg?_nc_cat=111&ccb=1-3&_nc_sid=09cbfe&_nc_ohc=P0rIy2lClVMAX885IlT&_nc_ht=scontent-lga3-1.xx&oh=09723c8e1e7e29e1f699b955915035fe&oe=60C111EF\") style=\"width: 55%; margin-left: auto; margin-right: auto; display: block;\" />");
 
           client.println("<h2 style=\"color: green; font-family: arial; text-align: center;\">LED ON/OFF FROM WEBPAGE</h2>");
           client.println("<hr>"); 
@@ -160,9 +164,9 @@ void printWifiStatus() {
   Serial.println(WiFi.SSID());
 
   // print your board's IP address:
-  IPAddress ip = WiFi.localIP();
+  /* IPAddress ip = WiFi.localIP(); */
   Serial.print("IP Address: ");
-  Serial.println(ip);
+  Serial.println(WiFi.localIP());
 
   // print the received signal strength:
   long rssi = WiFi.RSSI();
