@@ -3,9 +3,7 @@
 #include "arduino_secrets.h"
 #include <Servo.h>
 
-IPAddress ip(192, 168, 0, 177); 
-
-//Servo
+// Servo
 int servoPin = 9;
 int onPos = 180;
 int offPos = 145;
@@ -13,17 +11,12 @@ int pos;
 
 Servo myServo;
 
-//Button
-int buttonPin = 3;
-int buttonState;
-int previousButtonState = 1;
-int toggle = 0; //0 = off, 1 = on
+// Toggle
+int toggle = 0;
 
-//Debounce
-int debounce = 70; //(Anna Security)
-int lastDebounceTime = 0;
+// Network Settings
 
-int val; 
+IPAddress ip(192, 168, 1, 10);
 
 char ssid[] = SECRET_SSID;
 char pass[] = SECRET_PASS;
@@ -36,31 +29,37 @@ WiFiServer server(80);
 String controlString;
 String lightStatus;
 
-void setup() {
-  Serial.begin(9600);
-  myServo.attach(servoPin);
-  pinMode(buttonPin, INPUT_PULLUP);
+void (*resetFunc)(void) = 0;
 
-  while (!Serial) {
+void setup()
+{
+  Serial.begin(9600);
+
+  while (!Serial)
+  {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
   WiFi.config(ip);
 
   // check for the WiFi module:
-  if (WiFi.status() == WL_NO_MODULE) {
+  if (WiFi.status() == WL_NO_MODULE)
+  {
     Serial.println("Communication with WiFi module failed!");
     // don't continue
-    while (true);
+    while (true)
+      ;
   }
 
   String fv = WiFi.firmwareVersion();
-  if (fv < WIFI_FIRMWARE_LATEST_VERSION) {
+  if (fv < WIFI_FIRMWARE_LATEST_VERSION)
+  {
     Serial.println("Please upgrade the firmware");
   }
 
   // attempt to connect to WiFi network:
-  while (status != WL_CONNECTED) {
+  while (status != WL_CONNECTED)
+  {
     Serial.print("Attempting to connect to SSID: ");
     Serial.println(ssid);
     // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
@@ -74,19 +73,23 @@ void setup() {
   printWifiStatus();
 }
 
-
-void loop() {
+void loop()
+{
   // listen for incoming clients
   WiFiClient client = server.available();
-  if (client) {
+  if (client)
+  {
     Serial.println("new client");
     // an HTTP request ends with a blank line
     boolean currentLineIsBlank = true;
-    while (client.connected()) {
-      if (client.available()) {
+    while (client.connected())
+    {
+      if (client.available())
+      {
         char c = client.read();
         Serial.write(c);
-        if (controlString.length() < 100) {
+        if (controlString.length() < 100)
+        {
           // write characters to string
           controlString += c;
         }
@@ -94,12 +97,13 @@ void loop() {
         // if you've gotten to the end of the line (received a newline
         // character) and the line is blank, the HTTP request has ended,
         // so you can send a reply
-        if (c == '\n' && currentLineIsBlank) {
+        if (c == '\n' && currentLineIsBlank)
+        {
           // send a standard HTTP response header
           client.println("HTTP/1.1 200 OK");
           client.println("Content-Type: text/html");
-          client.println("Connection: close");  // the connection will be closed after completion of the response
-          client.println("Refresh: 60");  // refresh the page automatically every 5 sec
+          client.println("Connection: close"); // the connection will be closed after completion of the response
+          client.println("Refresh: 60");       // refresh the page automatically every 5 sec
           client.println();
           client.println("<!DOCTYPE HTML>");
           client.println("<html>");
@@ -109,40 +113,56 @@ void loop() {
           client.println("<title>Hallway Lights</title>");
           client.println("</head>");
           client.println("<body>");
-          
+
           // Optional Image
           // client.println("<img src=\"https://scontent-lga3-1.xx.fbcdn.net/v/t1.6435-9/128884714_2951717581774395_6712155076512710494_n.jpg?_nc_cat=111&ccb=1-3&_nc_sid=09cbfe&_nc_ohc=P0rIy2lClVMAX885IlT&_nc_ht=scontent-lga3-1.xx&oh=09723c8e1e7e29e1f699b955915035fe&oe=60C111EF\") style=\"width: 55%; margin-left: auto; margin-right: auto; display: block;\" />");
 
           client.println("<h2 style=\"color: green; font-family: arial; text-align: center;\">LED ON/OFF FROM WEBPAGE</h2>");
-          client.println("<hr>"); 
-          client.println("<h2 style=\"color: blue; font-family: arial; text-align: center;\"><a href=\"/?GPLED2ON\"\">Turn On</a> - <a href=\"/?GPLED2OFF\"\">Turn Off</a></h2>");
+          client.println("<hr>");
+          client.println("<h2 style=\"color: blue; font-family: arial; text-align: center;\"><a href=\"/?TOGGLE\"\">Turn On</a> - <a href=\"/?TOGGLE\"\">Turn Off</a></h2>");
           client.print("Status: ");
           client.print(lightStatus);
           client.println("</body>");
           client.println("</html>");
 
-          // control arduino pin
-          if ((controlString.indexOf("?GPLED2ON") > -1) && ((millis() - lastDebounceTime) > debounce)) {
-            turnOn();
-            lightStatus = "On";
-            lastDebounceTime = millis();
-          }
-          else {
-            if ((controlString.indexOf("?GPLED2OFF") > -1) && ((millis() - lastDebounceTime) > debounce)){
+          if (controlString.indexOf("?TOGGLE") > -1)
+          {
+            if (toggle == 0)
+            {
+              turnOn();
+              toggle = 1;
+            }
+            else if (toggle == 1)
+            {
               turnOff();
-              lightStatus = "Off";
-              lastDebounceTime = millis();
+              toggle = 0;
             }
           }
-                    //clearing string for next read 
-          controlString="";
+          if (controlString.indexOf("?ATTACH") > -1)
+          {
+            myServo.attach(servoPin);
+          }
+          if (controlString.indexOf("?DETACH") > -1)
+          {
+            myServo.detach();
+          }
+          if (controlString.indexOf("?RESET") > -1)
+          {
+            resetFunc();
+          }
+
+          //clearing string for next read
+          controlString = "";
           client.println("</html>");
           break;
         }
-        if (c == '\n') {
+        if (c == '\n')
+        {
           // you're starting a new line
           currentLineIsBlank = true;
-        } else if (c != '\r') {
+        }
+        else if (c != '\r')
+        {
           // you've gotten a character on the current line
           currentLineIsBlank = false;
         }
@@ -157,8 +177,8 @@ void loop() {
   }
 }
 
-
-void printWifiStatus() {
+void printWifiStatus()
+{
   // print the SSID of the network you're attached to:
   Serial.print("SSID: ");
   Serial.println(WiFi.SSID());
@@ -175,18 +195,20 @@ void printWifiStatus() {
   Serial.println(" dBm");
 }
 
-void turnOn() {
-  for (pos = 150; pos <= onPos; pos += 2) {
-        myServo.write(pos);
-        delay(25);
-
+void turnOn()
+{
+  for (pos = 150; pos <= onPos; pos += 2)
+  {
+    myServo.write(pos);
+    delay(25);
   }
 }
 
-void turnOff() {
-  for (pos = 180; pos >= offPos; pos -= 2) {
-        myServo.write(pos);
-        delay(25);
-
+void turnOff()
+{
+  for (pos = 180; pos >= offPos; pos -= 2)
+  {
+    myServo.write(pos);
+    delay(25);
   }
 }

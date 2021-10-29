@@ -1,6 +1,6 @@
 {
     "board": "arduino:megaavr:uno2018",
     "sketch": "Connection.ino",
-    "port": "/dev/tty.usbmodem14102",
+    "port": "/dev/cu.usbmodem14202",
     "configuration": "mode=on"
 }
