@@ -1,6 +1,12 @@
 {
     "board": "arduino:megaavr:uno2018",
+<<<<<<< HEAD
     "sketch": "Connection.ino",
     "port": "/dev/tty.usbmodem14102",
+=======
+    "sketch": "Amazon Lights.ino",
+    "port": "/dev/tty.usbmodem14102",
+    "programmer": "AVR ISP",
+>>>>>>> origin/main
     "configuration": "mode=on"
 }
